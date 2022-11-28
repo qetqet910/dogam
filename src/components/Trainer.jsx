@@ -1,7 +1,7 @@
 import { useRef } from "react";
 
 import { TrainerCard } from "../style/InfoStyle";
-import LogoBack from "../asset/LogoBack.png";
+import LogoBack from "../asset/img/LogoBack.png";
 import { faSearch, faExpand, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

@@ -7,7 +7,7 @@ export const Screen = styled.main`
     align-items: center;
     flex-direction: column;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #333333;
 `
 
@@ -20,7 +20,7 @@ export const TrainerCard = styled.div`
     height: 20%;
     background-color: #555;
     border-radius: 10px;
-    border: 5px solid #222;
+    border: 5px solid #222; 
     box-shadow: 0px 0px 3px #555;
     padding: 0 2rem;
     margin-top: 4rem;
@@ -44,9 +44,9 @@ export const TrainerCard = styled.div`
         justify-content: space-between;
         align-items: flex-end;
         flex-direction: column;
-        height: 60%;
         .top{
             margin-right: 1rem;
+            margin-bottom: 1rem;
             span{
                 display: inline-block;
                 margin-left: 2.6rem;
@@ -65,6 +65,7 @@ export const TrainerCard = styled.div`
         }
         .bottom{
             position: relative;
+            margin-top: 1rem;
             input{
                 all: unset;
                 font-size: 1.6rem;
@@ -109,7 +110,7 @@ export const TrainerCard = styled.div`
                     svg{
                         animation: identifier 1s infinite ease-in-out;
                     }
-                    @keyframes identifier {
+                    @keyframes identifierㅉ {
                         0%{
                             color: #C8C8CA;
                         }   
@@ -140,16 +141,64 @@ export const LottieStyled = styled.div`
 
 export const Pokemon = styled.ul`
     position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2rem .2rem;
+    place-items: center;
     width: 80%;
     min-height: 60%;
     background-color: #555;
     border-radius: 10px;
     border: 5px solid #222;
     box-shadow: 0px 0px 3px #555;
-    padding: 0 2rem;
+    padding: 2rem 2rem;
+    margin-bottom: 4rem;
+    li{
+        position: relative;
+        width: 20rem;
+        height: 20rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border-radius: 1rem;
+        background-color: #656565;
+        border: 3px solid #767676;
+        transition: all .5s;
+        cursor: pointer;
+
+        .ID{
+            position: absolute;
+            display: block;
+            left: 1rem;
+            top: 1rem;
+        }
+        img{
+            width: 60%;
+            transform: scale(1.2);
+        }
+        span, h1{
+            font-size: 1.6rem;
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Galmuri9';
+        }
+        div{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 1rem;
+            span{
+                display: inline-block;
+                margin: 0 .8rem;
+                color: #fff;
+                background-color: var(--color) !important;
+                padding: .4rem 1rem;
+                border-radius: 10px;
+            }
+        }
+    }
 `
 
 export const HashTag = styled.ul`
@@ -158,10 +207,17 @@ export const HashTag = styled.ul`
     justify-content: space-between;
     align-items: center;
     width: 80%;
-    min-height: 8%;
+    min-height: 8vh;
     border-radius: 10px;
     border: 5px solid #222;
     box-shadow:inset 0px 0px 3px #555;
-    padding: 0 2rem;
+    padding: 0 4rem;
     margin: 2rem 0;
+    li{
+        font-size: 2rem;
+        color: #fff;
+        font-weight: bold;
+        font-family: 'Galmuri9';
+        cursor: pointer;
+    }
 `
