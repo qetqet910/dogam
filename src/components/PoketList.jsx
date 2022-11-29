@@ -1,14 +1,12 @@
 import { Pokemon } from "../style/InfoStyle";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Translator } from "../func/Translator";
-import LottieCompo from "../lottie/lottieCompo";
 
 export default function PokeList(){
 
     const inputRef = useRef(null);
-    const asd = [];
-
-    const pokemons = 300
+    const pokemons = 100
+    // const APIData = []
     
     const fetchData = () => {
         for (let i = 1; i <= pokemons; i++) {
@@ -40,15 +38,19 @@ export default function PokeList(){
     
     const showPokemon = (pokemonSprite, pokemonName) => {
         if(Object.values(pokemonSprite.type).length === 2){
+            // Issue 170번째 초라기는 KoName이 3번째가 아닌 1번쨰라 예외처리함
+            // 성능 저하 API 에서 검열하는 코드로 리팩토링 예정
             let output = `
             <li>
-                <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
-                <span class='ID'>#${pokemonSprite.id}</span>
-                <h1>${pokemonName.name}</h1>
-                <div>
-                    ${Translator(Object.values(pokemonSprite.type)[0])}
-                    ${Translator(Object.values(pokemonSprite.type)[1])}
-                </div>
+                <a href="/${pokemonSprite.id}">
+                    <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
+                    <span class='ID'>#${pokemonSprite.id}</span>
+                    <h1>${pokemonName.name === 'Chonchie' ? '초라기' : pokemonName.name}</h1>
+                    <div>
+                        ${Translator(Object.values(pokemonSprite.type)[0])}
+                        ${Translator(Object.values(pokemonSprite.type)[1])}
+                    </div>
+                </a>
             </li>
             `
             if(inputRef.current.innerHTML === null) return;
@@ -56,25 +58,46 @@ export default function PokeList(){
         }else{
             let output = `
             <li>
-                <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
-                <span class='ID'>#${pokemonSprite.id}</span>
-                <h1>${pokemonName.name}</h1>
-                <div>
-                    ${Translator(Object.values(pokemonSprite.type)[0])}
-                </div>
+                <a href="/${pokemonSprite.id}">
+                    <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
+                    <span class='ID'>#${pokemonSprite.id}</span>
+                    <h1>${pokemonName.name}</h1>
+                    <div>
+                        ${Translator(Object.values(pokemonSprite.type)[0])}
+                    </div>
+                </a>
             </li>
             `
             if(inputRef.current.innerHTML === null) return;
             inputRef.current.innerHTML += output;
         }
     }
-    
-    fetchData();
+
+    function callback(){
+        return;
+    }
+
+    const observer = useRef(
+        new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                callback(); 
+                }
+            },
+            { threshold: 1 }
+        )
+    );
+
+    useEffect(() => {
+        window.onload = () => {
+            fetchData()
+        }   
+    }, [fetchData]);
 
     return(
         <>
             <Pokemon className="List" ref={inputRef}>
-                
+                <div className="Observer" ref={observer} ></div>
             </Pokemon>
         </>
     )
@@ -89,4 +112,5 @@ export default function PokeList(){
 
 // pokemon-species - 이름, 버전, 도감 설명
 // pokemon - sprites - 미리보기 이미지 
-// fetchData();
+// pokemon-species - flavor_text_entries.version.name 등장 버전
+// 버전은 영어여도 상관 없으니 다 끌어와서 중복 없애고 써야 할듯

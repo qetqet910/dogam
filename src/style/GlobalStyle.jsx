@@ -9,20 +9,20 @@ const GlobalStyle = createGlobalStyle`
         list-style: none;
         box-sizing: border-box;
         text-decoration: none;
-        &::-webkit-scrollbar
-        {
-            display: none;
-        }
+
     }
-    
     html{
         font-size: 62.5%;
     }
-
-    ::-webkit-scrollbar-thumb{
-        background-color: black;
+    ::-webkit-scrollbar{
+        width: 8px;
+        height: 8px;
+        background-color: #F5F5F5;
     }
-
+    ::-webkit-scrollbar-thumb {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #555;
+    }
     body{
         overflow-x: hidden;
     }
