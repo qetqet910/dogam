@@ -28,3 +28,20 @@ export const useIntersectionObserver = (callback) => {
 
   return setObservationTarget;
 };
+
+    // const observer = useRef(
+    //     new IntersectionObserver(
+    //         ([entry]) => {
+    //             if (entry.isIntersecting) {
+    //             callback(); 
+    //             }
+    //         },
+    //         { threshold: 1 }
+    //     )
+    // );
+
+    // function callback(){
+    //     return;
+    // }
+
+    {/* <div className="Observer" ref={observer} ></div> */}

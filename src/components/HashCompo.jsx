@@ -4,35 +4,24 @@ export default function HashSection(){
     return(
         <>
             <HashTag>
-                <li>레드</li>
-                <li>그린</li>
-                <li>블루</li>
-                <li>엘로우</li>
-                <li>골드</li>
-                <li>실버</li>
-                <li>크리스탈</li>
-                <li>루비</li>
-                <li>사파이어</li>
-                <li>에메랄드</li>
-                <li>파이어레드</li>
-                <li>리프그린</li>
-                <li>다이아몬드</li>
-                <li>펄</li>
-                <li>플레티넘</li>
-                <li>하트골드</li>
-                <li>소울실버</li>
-                <li>블랙</li>
-                <li>화이트</li>
-                <li>블랙2</li>
-                <li>화이트2</li>
-                <li>X</li>
-                <li>Y</li>
-                <li>썬</li>
-                <li>문</li>
-                <li>울썬</li>
-                <li>울문</li>
-                <li>오루</li>
-                <li>알사</li>
+                <li>노말</li>
+                <li>격투</li>
+                <li>비행</li>
+                <li>독</li>
+                <li>땅</li>
+                <li>바위</li>
+                <li>벌레</li>
+                <li>고스트</li>
+                <li>불꽃</li>
+                <li>물</li>
+                <li>풀</li>
+                <li>전기</li>
+                <li>에스퍼</li>
+                <li>얼음</li>
+                <li>드래곤</li>
+                <li>악</li>
+                <li>페어리</li>
+                <li>NULL</li>
             </HashTag>
         </>
     )

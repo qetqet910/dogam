@@ -1,5 +1,5 @@
 import { Player } from '@lottiefiles/react-lottie-player'
-import OptionalData from '../asset/Loading.json';
+import OptionalData from '../asset/json/Loading.json';
 import { LottieStyled } from '../style/InfoStyle';
 
 export default function LottieCompo() {

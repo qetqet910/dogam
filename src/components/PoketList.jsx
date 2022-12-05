@@ -1,103 +1,107 @@
 import { Pokemon } from "../style/InfoStyle";
-import { useRef, useEffect } from "react";
+import { useReducer } from "react";
 import { Translator } from "../func/Translator";
+import { Link } from "react-router-dom";
+import LottieCompo from "../lottie/lottieCompo";
+import axios from "axios";
 
 export default function PokeList(){
+    const DataList = [];
 
-    const inputRef = useRef(null);
-    const pokemons = 100
-    // const APIData = []
-    
-    const fetchData = () => {
-        for (let i = 1; i <= pokemons; i++) {
-            getPokemon(i);
+    const MaxCreature = 905
+
+    function reducer(state, action) {
+        switch (action.type) {
+          case 'LOADING':
+            return {
+              loading: true,
+              data: null,
+              error: null
+            };
+          case 'SUCCESS':
+            return {
+              loading: false,
+              data: action.data,
+              error: null
+            };
+          case 'ERROR':
+            return {
+              loading: false,
+              data: null,
+              error: action.error
+            };
+          default:
+            throw new Error(`Unhandled action type: ${action.type}`);
         }
+    }
+
+    const fetchData = () => {
+        for (let i = 1; i <= MaxCreature; i++) {
+            fetchUsers(i);
+        }
+    } 
+
+    const [state, dispatch] = useReducer(reducer, {
+        loading: false,
+        data: null,
+        error: null
+    });
+
+    const fetchUsers = async (id) => {
+
+        dispatch({ type: 'LOADING' });
+        const Data = {};
+        const types = [];
+
+        try {
+            const responseC1 = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+            const responseC2 = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+
+            Data.id = responseC1.data.id
+            responseC1.data.sprites.front_default !== null ? Data.sprite = responseC1.data.sprites.front_default : Data.sprite = Object.values(responseC1.data.sprites.other)[2].front_default;
+            
+            // 타입은 확정 1~2개이니 map으로 코스트를 개높이는 것 보다 이게 훨 나은듯
+            types.push(responseC1.data.types[0].type.name);
+            types.push(responseC1.data.types[1]?.type.name);
+            
+            Data.types = types;
+            Data.name = responseC2.data.names[2].name
+
+            DataList.push(Data);
+        } catch (e) {
+            dispatch({ type: 'ERROR', error: e });
+        }
+        if(DataList.length === MaxCreature){
+            dispatch({ type: 'SUCCESS', data: DataList})
+        }
+    };
+
+    const { loading, data: Value, error } = state;
+
+    window.onload = () => {
+        fetchData()
     }   
 
-    const getPokemon = async (id) => {
-        const Sprite = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-        const pokemonSprite = await Sprite.json();
-        const pokemonType = pokemonSprite.types.map((poke) => poke.type.name);
-
-        const Name = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
-        const pokemonName = await Name.json();
-
-        const transformedPokemonSprite = {
-            id: pokemonSprite.id,
-            image: `${pokemonSprite.sprites.front_default}`,
-            type: pokemonType,        
-        }
-
-        const transformedPokemonName = {
-            name: pokemonName.names[2].name,
-            // flavor: pokemonName.flavor_text_entries.
-        }
-
-        showPokemon(transformedPokemonSprite, transformedPokemonName);
-    }
-    
-    const showPokemon = (pokemonSprite, pokemonName) => {
-        if(Object.values(pokemonSprite.type).length === 2){
-            // Issue 170번째 초라기는 KoName이 3번째가 아닌 1번쨰라 예외처리함
-            // 성능 저하 API 에서 검열하는 코드로 리팩토링 예정
-            let output = `
-            <li>
-                <a href="/${pokemonSprite.id}">
-                    <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
-                    <span class='ID'>#${pokemonSprite.id}</span>
-                    <h1>${pokemonName.name === 'Chonchie' ? '초라기' : pokemonName.name}</h1>
-                    <div>
-                        ${Translator(Object.values(pokemonSprite.type)[0])}
-                        ${Translator(Object.values(pokemonSprite.type)[1])}
-                    </div>
-                </a>
-            </li>
-            `
-            if(inputRef.current.innerHTML === null) return;
-            inputRef.current.innerHTML += output;
-        }else{
-            let output = `
-            <li>
-                <a href="/${pokemonSprite.id}">
-                    <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
-                    <span class='ID'>#${pokemonSprite.id}</span>
-                    <h1>${pokemonName.name}</h1>
-                    <div>
-                        ${Translator(Object.values(pokemonSprite.type)[0])}
-                    </div>
-                </a>
-            </li>
-            `
-            if(inputRef.current.innerHTML === null) return;
-            inputRef.current.innerHTML += output;
-        }
-    }
-
-    function callback(){
-        return;
-    }
-
-    const observer = useRef(
-        new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                callback(); 
-                }
-            },
-            { threshold: 1 }
-        )
-    );
-
-    useEffect(() => {
-        window.onload = () => {
-            fetchData()
-        }   
-    }, [fetchData]);
-
+    if (error) return <div>에러 발생</div>;
+    if (loading) return <LottieCompo></LottieCompo>;
+    // 스켈레톤 컴포넌트 추가 예정 
+    if (!Value) return null
     return(
         <>
-            <Pokemon className="List" ref={inputRef}>
-                <div className="Observer" ref={observer} ></div>
+            <Pokemon className="List">
+                {Value.map(cur => (
+                    <li>
+                        <Link to={`/${cur.id}`}>
+                            <img src={`${cur.sprite}`} alt={`${cur.name}`} />
+                            <span class='ID'>#{cur.id}</span>
+                            <h1>{cur.name === 'Chonchie' ? '초라기' : cur.name}</h1>
+                            <div>
+                                {Translator(cur.types[0])}
+                                {Translator(cur.types[1])}
+                            </div>
+                        </Link>
+                    </li>
+                ))}
             </Pokemon>
         </>
     )
@@ -114,3 +118,62 @@ export default function PokeList(){
 // pokemon - sprites - 미리보기 이미지 
 // pokemon-species - flavor_text_entries.version.name 등장 버전
 // 버전은 영어여도 상관 없으니 다 끌어와서 중복 없애고 써야 할듯
+
+// const getPokemon = async (id) => {
+//     const Sprite = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+//     const pokemonSprite = await Sprite.json();
+//     const pokemonType = pokemonSprite.types.map((poke) => poke.type.name);
+
+//     const Name = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+//     const pokemonName = await Name.json();
+
+//     const transformedPokemonSprite = {
+//         id: pokemonSprite.id,
+//         image: `${pokemonSprite.sprites.front_default}`,
+//         type: pokemonType,        
+//     }
+
+//     const transformedPokemonName = {
+//         name: pokemonName.names[2].name,
+//         // flavor: pokemonName.flavor_text_entries.
+//     }
+
+//     showPokemon(transformedPokemonSprite, transformedPokemonName);
+// }
+
+// const showPokemon = (pokemonSprite, pokemonName) => {
+//     if(Object.values(pokemonSprite.type).length === 2){
+//         // Issue 170번째 초라기는 KoName이 3번째가 아닌 1번쨰라 예외처리함
+//         // 성능 저하 API 에서 검열하는 코드로 리팩토링 예정
+//         let output = `
+//         <li>
+//             <a href="/${pokemonSprite.id}">
+//                 <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
+//                 <span class='ID'>#${pokemonSprite.id}</span>
+//                 <h1>${pokemonName.name === 'Chonchie' ? '초라기' : pokemonName.name}</h1>
+//                 <div>
+//                     ${Translator(Object.values(pokemonSprite.type)[0])}
+//                     ${Translator(Object.values(pokemonSprite.type)[1])}
+//                 </div>
+//             </a>
+//         </li>
+//         `
+//         if(inputRef.current.innerHTML === null) return;
+//         inputRef.current.innerHTML += output;
+//     }else{
+//         let output = `
+//         <li>
+//             <a href="/${pokemonSprite.id}">
+//                 <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
+//                 <span class='ID'>#${pokemonSprite.id}</span>
+//                 <h1>${pokemonName.name}</h1>
+//                 <div>
+//                     ${Translator(Object.values(pokemonSprite.type)[0])}
+//                 </div>
+//             </a>
+//         </li>
+//         `
+//         if(inputRef.current.innerHTML === null) return;
+//         inputRef.current.innerHTML += output;
+//     }
+// }
