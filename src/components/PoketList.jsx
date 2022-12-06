@@ -1,14 +1,18 @@
 import { Pokemon } from "../style/InfoStyle";
 import { useReducer } from "react";
-import { Translator } from "../func/Translator";
-import { Link } from "react-router-dom";
 import LottieCompo from "../lottie/lottieCompo";
 import axios from "axios";
+import Card from "./Card";
+
+import { useRecoilState } from "recoil";
+import { textState } from "../atom/atom";
 
 export default function PokeList(){
     const DataList = [];
 
-    const MaxCreature = 905
+    const MaxCreature = 200
+
+    const [text] = useRecoilState(textState)
 
     function reducer(state, action) {
         switch (action.type) {
@@ -65,7 +69,8 @@ export default function PokeList(){
             types.push(responseC1.data.types[1]?.type.name);
             
             Data.types = types;
-            Data.name = responseC2.data.names[2].name
+            if(responseC2.data.names[2].name === "Chonchie"){Data.name = "초라기"}
+            else Data.name = responseC2.data.names[2].name
 
             DataList.push(Data);
         } catch (e) {
@@ -84,96 +89,23 @@ export default function PokeList(){
 
     if (error) return <div>에러 발생</div>;
     if (loading) return <LottieCompo></LottieCompo>;
-    // 스켈레톤 컴포넌트 추가 예정 
     if (!Value) return null
-    return(
-        <>
-            <Pokemon className="List">
-                {Value.map(cur => (
-                    <li>
-                        <Link to={`/${cur.id}`}>
-                            <img src={`${cur.sprite}`} alt={`${cur.name}`} />
-                            <span class='ID'>#{cur.id}</span>
-                            <h1>{cur.name === 'Chonchie' ? '초라기' : cur.name}</h1>
-                            <div>
-                                {Translator(cur.types[0])}
-                                {Translator(cur.types[1])}
-                            </div>
-                        </Link>
-                    </li>
-                ))}
-            </Pokemon>
-        </>
-    )
+
+    if (Value.length === MaxCreature) {
+        const filterdMonster = Value.filter((data) => {
+            return data.name.includes(text);
+        });
+        return(
+            <>
+                <Pokemon className="List">
+                    {filterdMonster.map(cur => (
+                        <Card key={cur.id} {...cur} />
+                    ))}
+                </Pokemon>
+            </>
+        )
+    }
 }
 
-// Object.values(data.pokemon_entries).map(item => {console.log(item.pokemon_species.name)})
-// .map(item => {console.log(item);})
-// 0번 이상해씨부터 905번 러브로스까지 전국도감 
-// 관동, 성도, 호연, 신오, 하나, 칼로스, 알로라, 가라르, 히스이 
-// (팔데아)는 아직 안 나옴
-// 체킹 방식 클래스 이름으로 지방 이름 새겨넣기. 검색기능과 태그로 검색 가능
-
-// pokemon-species - 이름, 버전, 도감 설명
-// pokemon - sprites - 미리보기 이미지 
-// pokemon-species - flavor_text_entries.version.name 등장 버전
-// 버전은 영어여도 상관 없으니 다 끌어와서 중복 없애고 써야 할듯
-
-// const getPokemon = async (id) => {
-//     const Sprite = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-//     const pokemonSprite = await Sprite.json();
-//     const pokemonType = pokemonSprite.types.map((poke) => poke.type.name);
-
-//     const Name = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
-//     const pokemonName = await Name.json();
-
-//     const transformedPokemonSprite = {
-//         id: pokemonSprite.id,
-//         image: `${pokemonSprite.sprites.front_default}`,
-//         type: pokemonType,        
-//     }
-
-//     const transformedPokemonName = {
-//         name: pokemonName.names[2].name,
-//         // flavor: pokemonName.flavor_text_entries.
-//     }
-
-//     showPokemon(transformedPokemonSprite, transformedPokemonName);
-// }
-
-// const showPokemon = (pokemonSprite, pokemonName) => {
-//     if(Object.values(pokemonSprite.type).length === 2){
-//         // Issue 170번째 초라기는 KoName이 3번째가 아닌 1번쨰라 예외처리함
-//         // 성능 저하 API 에서 검열하는 코드로 리팩토링 예정
-//         let output = `
-//         <li>
-//             <a href="/${pokemonSprite.id}">
-//                 <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
-//                 <span class='ID'>#${pokemonSprite.id}</span>
-//                 <h1>${pokemonName.name === 'Chonchie' ? '초라기' : pokemonName.name}</h1>
-//                 <div>
-//                     ${Translator(Object.values(pokemonSprite.type)[0])}
-//                     ${Translator(Object.values(pokemonSprite.type)[1])}
-//                 </div>
-//             </a>
-//         </li>
-//         `
-//         if(inputRef.current.innerHTML === null) return;
-//         inputRef.current.innerHTML += output;
-//     }else{
-//         let output = `
-//         <li>
-//             <a href="/${pokemonSprite.id}">
-//                 <img loading="lazy" src=${pokemonSprite.image} alt=${pokemonName.name} />
-//                 <span class='ID'>#${pokemonSprite.id}</span>
-//                 <h1>${pokemonName.name}</h1>
-//                 <div>
-//                     ${Translator(Object.values(pokemonSprite.type)[0])}
-//                 </div>
-//             </a>
-//         </li>
-//         `
-//         if(inputRef.current.innerHTML === null) return;
-//         inputRef.current.innerHTML += output;
-//     }
-// }
+// Logic - 불러옴 - 이벤트 감지 - 필터로 거르는데 여기서
+// 검색창에 단어 있으면 같이 검색함

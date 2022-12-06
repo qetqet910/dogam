@@ -228,8 +228,24 @@ export const LottieStyled = styled.div`
     width: 100%;
     height: 100%;
     transition: all .5s;
+    .Active{
+        opacity: 1;
+        z-index: 9999;
+    }
+    &::before{
+        content: '';
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        background: black;
+        opacity: .8;
+        backdrop-filter: blur(2px);
+    }
     svg{
-        transition: all .5s;
+        user-select: none;
+        pointer-events: none;
     }
 `
 
@@ -474,12 +490,10 @@ export const HashTag = styled.ul`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    overflow-x: scroll;
     white-space: nowrap;
-    ::-webkit-scrollbar{
-        display: none;
-    }
 
+    overflow-x: scroll;
+    overflow-y: visible;
     width: 80%;
     border-radius: 10px;
     margin: 2rem 0;
@@ -488,15 +502,21 @@ export const HashTag = styled.ul`
     border: 5px solid #222;
     box-shadow:inset 0px 0px 3px #555;
     li{
+        position: relative;
         color: #fff;
         font-weight: bold;
         font-family: 'Galmuri9';
         font-size: 2vw;
         margin: 0 1rem;
+        text-shadow: 0px 0px 2px var(--color), 0px 0px 4px var(--color);
+        padding: .9vw 1.2vw;
+        transition: all .4s;
+        border-radius: 50vw;
         cursor: pointer;
         /* scroll-snap-align: start; */
         @media (min-width: 1000px) {
             font-size: 1.6vw;
+            padding: .7vw 1vw;
         }
         @media (min-width: 1350px) {
             font-size: 1.5vw;
@@ -506,18 +526,36 @@ export const HashTag = styled.ul`
         }
         @media (min-width: 1550px) {
             font-size: 1.3vw;
+            padding: .5vw .8vw;
         }
         @media (min-width: 1660px) {
             font-size: 1.2vw;
         }
         @media (min-width: 1770px) {
             font-size: 1.1vw;
+            padding: .4vw .7vw;
         }
         @media (min-width: 1880px) {
             font-size: 1vw;
         }
         @media (min-width: 1990px) {
             font-size: 1vw;
+            padding: .3vw .6vw;
         }
+        img{
+            min-width: 10px;
+            width: 30%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all .4s;
+        }
+        .Active{
+            transform: translate(-50%, -300%) scale(4);
+        }
+    }
+    li:hover{
+        background: var(--color) ;
     }
 `

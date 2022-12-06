@@ -5,12 +5,14 @@ import HashSection from "./components/HashCompo";
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PageNotFoundLOTTIE from "./components/PageNotFound";
 import DashBoardView from "./components/DashboardView";
+import { RecoilRoot } from 'recoil';
+import { Console } from "./func/Console";
 
-// import { useQuery } from "react-query"
+Console();
 
 function App() {
   return (
-    <>
+    <RecoilRoot>
       <BrowserRouter>
         <Screen>
           <Routes>
@@ -26,7 +28,7 @@ function App() {
           </Routes>
         </Screen>
       </BrowserRouter>
-    </>
+    </RecoilRoot>
   );
 }
 
